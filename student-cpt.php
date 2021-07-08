@@ -5,10 +5,9 @@
  * Author: Kristian Vassilev
  * Version: 1.0.0
  */
+
+
 // creates the student post type
-
-//add_filter( 'manage_student_posts_columns', 'ob_set_student_columns' );
-
 
 function student_post_type(){
 
@@ -50,13 +49,6 @@ function enrolment_taxonomy(){
 
 add_action('init', 'enrolment_taxonomy');
 
-// function ob_set_student_columns( $columns ){
-//     $newColumns = array();
-//     $newColumns['title'] = 'Full Name';
-//     $newColumns['category'] = 'Subjects';
-//     return $columns;
-// }
-
 
 // Student Post Type meta boxes
 
@@ -80,7 +72,6 @@ function ob_student_birth_date_add_meta_box(){
 function ob_student_class_add_meta_box(){
 	add_meta_box('student_class', 'Student class', 'ob_student_class_callback', 'student', 'side');
 }
-
 
 // Adds the student location form to the edit screen
 function ob_student_location_callback( $post ){
@@ -122,15 +113,11 @@ function ob_student_class_callback( $post ){
 	echo '<input type="text" id="ob_student_class_field" name="ob_student_class_field" value="' . esc_attr( $value ) . '"size="25" />';
 }
 
-
-
 // Calls the functions to add the meta boxes
 add_action('add_meta_boxes', 'ob_student_location_add_meta_box');
 add_action('add_meta_boxes', 'ob_student_address_add_meta_box');
 add_action('add_meta_boxes', 'ob_student_birth_date_add_meta_box');
 add_action('add_meta_boxes', 'ob_student_class_add_meta_box');
-
-
 
 
 // Verifies, sanitizes and saves the user input for the location field to the db
@@ -227,7 +214,6 @@ function ob_save_student_birth_date( $post_id ){
 add_action( 'save_post', 'ob_save_student_birth_date' );
 
 
-
 // Verifies, sanitizes and saves the user input for the class / grade field to the db
 function ob_save_student_class( $post_id ){
 	if( !isset( $_POST['ob_student_class_meta_box_nonce'])){
@@ -257,4 +243,49 @@ function ob_save_student_class( $post_id ){
 }
 
 add_action( 'save_post', 'ob_save_student_class' );
-?>
+
+
+// Adds the checkbox.js script
+function add_checkbox_script() {
+    wp_enqueue_script('checkbox', plugins_url('checkbox.js', __FILE__), array('jquery'),false, true);
+    wp_localize_script( 'checkbox', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+};
+
+// use admin_enqueue_scripts to enque to the admin only
+add_action( 'admin_enqueue_scripts', 'add_checkbox_script' );  
+add_action( 'wp_ajax_checkbox', 'checkbox' );
+
+
+// Adds custom column to Post Type "students"
+
+add_action('manage_student_posts_columns', 'student_custom_column_head');
+
+// Tackles the "header" of the column
+function student_custom_column_head ($columns) {
+    //$columns contains all currently available columns (Default)
+    $columns['enable_student'] = 'Active Student'; //adding to all currently present
+    return $columns;
+}
+
+// gets the content of the status column
+
+add_action('manage_student_posts_custom_column', 'student_custom_column_data', 10,2); //10 is priority, 2 - num of params
+
+function student_custom_column_data($column, $post_id){
+    $currentStatus = get_post_meta($post_id, '_is_active_student', true);
+    switch($column) {
+        case 'enable_student': ?>
+            <input type="checkbox" name="activeStudent" id="activeStudent_<?php echo $post_id; ?>" <?php if ($currentStatus=="true") {echo 'checked';} ?>>
+            <?php
+    }
+}
+
+
+// handling the ajax call
+function checkbox() {
+    $checkboxValue = sanitize_text_field($_POST['isActive']);
+    $studentId = $_POST['studentId'];
+    update_post_meta($studentId, '_is_active_student', $checkboxValue);
+
+    wp_send_json_success($checkboxValue, $studentId);
+}
