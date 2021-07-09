@@ -269,7 +269,7 @@ function student_custom_column_head ($columns) {
 
 // gets the content of the status column
 
-add_action('manage_student_posts_custom_column', 'student_custom_column_data', 10,2); //10 is priority, 2 - num of params
+add_action('manage_student_posts_custom_column', 'student_custom_column_data', 10,2); 
 
 function student_custom_column_data($column, $post_id){
     $currentStatus = get_post_meta($post_id, '_is_active_student', true);
