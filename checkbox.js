@@ -1,5 +1,3 @@
-console.log('works for custom post type plugin')
-
 jQuery('input[name="activeStudent"]').on('change', (e) => {
     console.log(e.target)
     const isActive = e.target.checked
@@ -7,7 +5,7 @@ jQuery('input[name="activeStudent"]').on('change', (e) => {
     console.log(isActive)
 
     let data = {
-        action: 'checkbox', // the function that will receive data
+        action: 'checkbox', // the function that receives data
         isActive: isActive,
         studentId: studentID,
     }
@@ -19,14 +17,10 @@ jQuery('input[name="activeStudent"]').on('change', (e) => {
             data: data,
             success: function (response) {
                console.log(response.data)
-
             },
             error: function (response) {
                 console.log('error',response.data)
             }
         })
-
     }
-
-
   });
