@@ -1,8 +1,6 @@
 jQuery('input[name="activeStudent"]').on('change', (e) => {
-    console.log(e.target)
     const isActive = e.target.checked
     const studentID = e.target.id.split('_')[1]
-    console.log(isActive)
 
     let data = {
         action: 'checkbox', // the function that receives data
