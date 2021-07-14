@@ -13,7 +13,7 @@
  *
  * @return void
  */
-function student_post_type() {
+function ob_student_post_type() {
 
 	$args = array(
 		'labels'      => array(
@@ -29,14 +29,14 @@ function student_post_type() {
 	register_post_type( 'student', $args );
 }
 // adds the student post type upon WordPress init.
-add_action( 'init', 'student_post_type' );
+add_action( 'init', 'ob_student_post_type' );
 
 /**
  * Adds enrolment taxonomy
  *
  * @return void
  */
-function enrolment_taxonomy() {
+function ob_enrolment_taxonomy() {
 
 	$args = array(
 		'labels'       => array(
@@ -49,7 +49,7 @@ function enrolment_taxonomy() {
 	register_taxonomy( 'subjects', array( 'student' ), $args );
 }
 
-add_action( 'init', 'enrolment_taxonomy' );
+add_action( 'init', 'ob_enrolment_taxonomy' );
 
 
 // ----> Student Post Type Meta Boxes.
@@ -309,19 +309,19 @@ add_action( 'save_post', 'ob_save_student_class' );
  *
  * @return void
  */
-function add_checkbox_script() {
+function ob_add_checkbox_script() {
 	wp_enqueue_script( 'checkbox', plugins_url( 'checkbox.js', __FILE__ ), array( 'jquery' ), false, true );
 	wp_localize_script( 'checkbox', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 };
 
 // use admin_enqueue_scripts to enque to the admin only.
-add_action( 'admin_enqueue_scripts', 'add_checkbox_script' );
+add_action( 'admin_enqueue_scripts', 'ob_add_checkbox_script' );
 add_action( 'wp_ajax_checkbox', 'checkbox' );
 
 
 
 // Adds custom column to Post Type "students".
-add_action( 'manage_student_posts_columns', 'student_custom_column_head' );
+add_action( 'manage_student_posts_columns', 'ob_student_custom_column_head' );
 
 /**
  * Tackles the "header" of the column
@@ -329,14 +329,14 @@ add_action( 'manage_student_posts_columns', 'student_custom_column_head' );
  * @param object $columns is the custom enable/disable column.
  * @return void
  */
-function student_custom_column_head( $columns ) {
+function ob_student_custom_column_head( $columns ) {
 	// $columns contains all currently available columns (Default).
 	$columns['enable_student'] = 'Active Student'; // Adding to all currently present.
 	return $columns;
 }
 
 // Gets the content of the status column.
-add_action( 'manage_student_posts_custom_column', 'student_custom_column_data', 10, 2 );
+add_action( 'manage_student_posts_custom_column', 'ob_student_custom_column_data', 10, 2 );
 /**
  * Checks if the status of a given student is active or not (true or false)
  *
@@ -344,7 +344,7 @@ add_action( 'manage_student_posts_custom_column', 'student_custom_column_data', 
  * @param object $post_id is the id of the WordPress post.
  * @return void
  */
-function student_custom_column_data( $column, $post_id ) {
+function ob_student_custom_column_data( $column, $post_id ) {
 	$current_status = get_post_meta( $post_id, '_is_active_student', true );
 	switch ( $column ) {
 		case 'enable_student':
